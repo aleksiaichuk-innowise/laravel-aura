@@ -73,6 +73,8 @@ Aura includes the following collectors by default:
 - **Jobs**: Tracks queue job execution (processed vs failed).
 - **Cache**: Records cache efficiency (hit rate, writes, misses).
 
+
+
 ## Log Correlation
 
 When `log_integration` is enabled, Aura automatically adds the current `trace_id` to Laravel's log context. Any log entry created during the request will include this ID:
@@ -93,6 +95,48 @@ Access the Aura dashboard at `/aura` (default path) to view:
 - **Performance Insights**: Automatic detection of N+1 and duplicate queries.
 - **Resource Stats**: Real-time memory, cache, and queue activity.
 
+Access the Aura dashboard at `/aura` (default path) to view collected metrics and insights.
+
+## Customization
+
+### Adding a Custom Collector
+
+Implement the `CollectorInterface` and register it in `config/aura.php`:
+
+```php
+namespace App\Collectors;
+
+use Aura\Contracts\CollectorInterface;use Aura\Core\AuraManager;
+
+class CustomCollector implements CollectorInterface
+{
+    public function __construct(protected AuraManager $manager) {}
+
+    public function register(): void
+    {
+        // Listen for events and record metrics
+    }
+}
+```
+
+### Adding a Custom Insight
+
+Implement the `InsightInterface` and register it in `AuraServiceProvider`:
+
+```php
+namespace App\Insights;
+
+use Aura\Contracts\InsightInterface;use Illuminate\Support\Collection;
+
+class CustomInsight implements InsightInterface
+{
+    public function check(Collection $metrics): Collection
+    {
+        // Analyze metrics and return processed collection
+        return $metrics;
+    }
+}
+```
 ## Testing
 
 ```bash
