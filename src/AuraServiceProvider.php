@@ -80,7 +80,7 @@ class AuraServiceProvider extends ServiceProvider
         $tracker = $this->app->make(Tracker::class);
         $key = config('aura.log_integration.context_key', 'aura_trace_id');
 
-        if (method_exists($this->app['log'], 'withContext')) {
+        if (is_callable([$this->app['log'], 'withContext'])) {
             $this->app['log']->withContext([
                 $key => $tracker->getTraceId(),
             ]);
