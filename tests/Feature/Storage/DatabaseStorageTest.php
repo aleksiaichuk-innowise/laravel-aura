@@ -2,11 +2,10 @@
 
 namespace Aura\Tests\Feature\Storage;
 
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Storage\DatabaseStorage;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
 use Aura\Tests\TestCase;
-use Illuminate\Support\Facades\DB;
 
 class DatabaseStorageTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 namespace Aura\Tests\Unit;
 
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 
 class FinalCoverageBoosterTest extends TestCase

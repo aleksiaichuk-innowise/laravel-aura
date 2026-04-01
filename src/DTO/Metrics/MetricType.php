@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aura\DTO;
+namespace Aura\DTO\Metrics;
 
 enum MetricType: string
 {
@@ -12,4 +12,5 @@ enum MetricType: string
     case EXTERNAL_HTTP_REQUEST = 'http_request';
     case JOB_EXECUTION = 'job_execution';
     case CACHE_OPERATION = 'cache_operation';
+    case INSIGHT = 'insight';
 }

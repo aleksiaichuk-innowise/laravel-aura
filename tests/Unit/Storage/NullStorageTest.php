@@ -2,8 +2,8 @@
 
 namespace Aura\Tests\Unit\Storage;
 
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Storage\NullStorage;
 use Aura\Tests\TestCase;
 

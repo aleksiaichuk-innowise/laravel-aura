@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Aura\DTO;
+namespace Aura\DTO\Metrics;
 
 use Illuminate\Contracts\Support\Arrayable;
 

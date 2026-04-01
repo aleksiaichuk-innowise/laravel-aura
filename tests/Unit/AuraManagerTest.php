@@ -2,13 +2,13 @@
 
 namespace Aura\Tests\Unit;
 
+use Aura\Contracts\StorageInterface;
 use Aura\Core\AuraManager;
 use Aura\Core\DataMasker;
 use Aura\Core\InsightEngine;
 use Aura\Core\Tracker;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
-use Aura\Contracts\StorageInterface;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 use Mockery;
 

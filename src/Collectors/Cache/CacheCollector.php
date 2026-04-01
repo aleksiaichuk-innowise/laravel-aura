@@ -6,8 +6,8 @@ namespace Aura\Collectors\Cache;
 
 use Aura\Contracts\CollectorInterface;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyWritten;

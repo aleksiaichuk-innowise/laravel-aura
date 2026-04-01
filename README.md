@@ -72,10 +72,7 @@ Implement the `CollectorInterface` and register it in `config/aura.php`:
 ```php
 namespace App\Collectors;
 
-use Aura\Contracts\CollectorInterface;
-use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\Contracts\CollectorInterface;use Aura\Core\AuraManager;
 
 class CustomCollector implements CollectorInterface
 {
@@ -95,9 +92,7 @@ Implement the `InsightInterface` and register it in `AuraServiceProvider`:
 ```php
 namespace App\Insights;
 
-use Aura\Contracts\InsightInterface;
-use Aura\DTO\MetricData;
-use Illuminate\Support\Collection;
+use Aura\Contracts\InsightInterface;use Illuminate\Support\Collection;
 
 class CustomInsight implements InsightInterface
 {

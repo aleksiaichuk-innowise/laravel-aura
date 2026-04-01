@@ -2,9 +2,9 @@
 
 namespace Aura\Tests\Feature\Console;
 
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
 use Aura\Contracts\StorageInterface;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 
 class PruneCommandTest extends TestCase

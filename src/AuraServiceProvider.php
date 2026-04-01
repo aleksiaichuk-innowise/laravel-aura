@@ -52,6 +52,7 @@ class AuraServiceProvider extends ServiceProvider
         $this->app['router']->aliasMiddleware('aura.auth', AuraShieldMiddleware::class);
 
         $this->registerResources();
+        $this->integrateWithLogs();
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -65,6 +66,25 @@ class AuraServiceProvider extends ServiceProvider
         });
 
         $this->registerCollectors();
+    }
+
+    /**
+     * Integrate with Laravel's logging system.
+     */
+    protected function integrateWithLogs(): void
+    {
+        if (!config('aura.log_integration.enabled', true)) {
+            return;
+        }
+
+        $tracker = $this->app->make(Tracker::class);
+        $key = config('aura.log_integration.context_key', 'aura_trace_id');
+
+        if (method_exists($this->app['log'], 'withContext')) {
+            $this->app['log']->withContext([
+                $key => $tracker->getTraceId(),
+            ]);
+        }
     }
 
     protected function registerResources(): void

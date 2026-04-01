@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Aura\Insights;
 
 use Aura\Contracts\InsightInterface;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use JsonException;
 
 class DatabaseInsight implements InsightInterface
 {
@@ -15,7 +17,7 @@ class DatabaseInsight implements InsightInterface
     protected int $nPlusOneThreshold = 5;
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function process(Collection $metrics): Collection
     {
@@ -35,6 +37,11 @@ class DatabaseInsight implements InsightInterface
         foreach ($queries as $metric) {
             $sql = $metric->tags['sql'] ?? '';
             $bindings = $metric->tags['bindings'] ?? [];
+
+            // Ignore internal Aura metrics table to prevent false positives
+            if (Str::contains($sql, config('aura.metrics.table'))) {
+                continue;
+            }
             
             $sqlHash = md5($sql);
             $fullHash = md5(sprintf("%s%s", $sql, json_encode($bindings, JSON_THROW_ON_ERROR)));
@@ -44,9 +51,10 @@ class DatabaseInsight implements InsightInterface
 
             if ($queryHashes[$sqlHash] >= $this->nPlusOneThreshold && !isset($detectedNPlusOne[$sqlHash])) {
                 $insights->push(new MetricData(
-                    type: MetricType::DATABASE_QUERY,
+                    type: MetricType::INSIGHT,
                     value: $queryHashes[$sqlHash],
                     tags: [
+                        'original_type' => MetricType::DATABASE_QUERY->value,
                         'sql' => $sql,
                         'insight' => 'Possible N+1 problem detected',
                         'severity' => 'warning'
@@ -57,9 +65,10 @@ class DatabaseInsight implements InsightInterface
 
             if ($fullHashes[$fullHash] >= $this->duplicateThreshold && !isset($detectedDuplicates[$fullHash])) {
                 $insights->push(new MetricData(
-                    type: MetricType::DATABASE_QUERY,
+                    type: MetricType::INSIGHT,
                     value: $fullHashes[$fullHash],
                     tags: [
+                        'original_type' => MetricType::DATABASE_QUERY->value,
                         'sql' => $sql,
                         'bindings' => $bindings,
                         'insight' => 'Duplicate query detected',

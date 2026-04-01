@@ -3,9 +3,9 @@
 namespace Aura\Tests\Feature;
 
 use Aura\Aura;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
 use Aura\Contracts\StorageInterface;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 
 class DashboardApiTest extends TestCase

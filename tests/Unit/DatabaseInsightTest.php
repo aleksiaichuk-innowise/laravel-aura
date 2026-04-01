@@ -2,8 +2,8 @@
 
 namespace Aura\Tests\Unit;
 
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Insights\DatabaseInsight;
 use Aura\Tests\TestCase;
 use Illuminate\Support\Collection;

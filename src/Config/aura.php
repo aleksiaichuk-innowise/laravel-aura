@@ -48,12 +48,41 @@ return [
 
     'slow_query_threshold' => env('AURA_SLOW_QUERY_MS', 10),
     'slow_http_threshold' => env('AURA_SLOW_HTTP_MS', 1000),
+    'slow_request_threshold' => env('AURA_SLOW_REQUEST_MS', 500),
 
     'path' => env('AURA_PATH', 'aura'),
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | Data Masking
+    |--------------------------------------------------------------------------
+    |
+    | Fields that should be masked when recording metrics.
+    |
+    */
+    'masking' => [
+        'fields' => [
+            'password', 'token', 'secret', 'authorization', 'key', 'credential', 'api_key', 'pass'
+        ],
+    ],
+
     'middleware' => [
         'web',
         'aura.auth',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Integration
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, Aura will automatically add the current trace-id to 
+    | Laravel's log context.
+    |
+    */
+    'log_integration' => [
+        'enabled' => env('AURA_LOG_INTEGRATION', true),
+        'context_key' => 'aura_trace_id',
     ],
 ];

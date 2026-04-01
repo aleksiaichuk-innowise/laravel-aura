@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Aura\Storage;
 
 use Aura\Contracts\StorageInterface;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 

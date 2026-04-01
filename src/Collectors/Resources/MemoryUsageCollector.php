@@ -6,8 +6,8 @@ namespace Aura\Collectors\Resources;
 
 use Aura\Contracts\CollectorInterface;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Contracts\Foundation\Application;
 
 class MemoryUsageCollector implements CollectorInterface

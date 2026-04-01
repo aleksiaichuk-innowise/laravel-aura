@@ -3,9 +3,9 @@
 namespace Aura\Tests\Feature;
 
 use Aura\Aura;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
 use Aura\Contracts\StorageInterface;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 
 class ComprehensiveDashboardTest extends TestCase
@@ -20,12 +20,12 @@ class ComprehensiveDashboardTest extends TestCase
     {
         $storage = app(StorageInterface::class);
 
-        $storage->store(new MetricData(MetricType::DATABASE_QUERY, 100, ['slow' => true]));
-        $storage->store(new MetricData(MetricType::DATABASE_QUERY, 10, ['insight' => 'Duplicate query']));
-        $storage->store(new MetricData(MetricType::EXTERNAL_HTTP_REQUEST, 2000, ['slow' => true]));
+        $storage->store(new MetricData(MetricType::DATABASE_QUERY, 100, ['slow' => true, 'sql' => 'SELECT * FROM users']));
+        $storage->store(new MetricData(MetricType::INSIGHT, 10, ['insight' => 'Duplicate query', 'severity' => 'info', 'sql' => 'SELECT * FROM users']));
+        $storage->store(new MetricData(MetricType::EXTERNAL_HTTP_REQUEST, 2000, ['slow' => true, 'method' => 'GET', 'url' => 'https://api.example.com']));
         $storage->store(new MetricData(MetricType::REQUEST_DURATION, 50, []));
         $storage->store(new MetricData(MetricType::MEMORY_USAGE, 128, []));
-        $storage->store(new MetricData(MetricType::CACHE_OPERATION, 1, ['operation' => 'hit']));
+        $storage->store(new MetricData(MetricType::CACHE_OPERATION, 1, ['operation' => 'hit', 'key' => 'test']));
         $storage->store(new MetricData(MetricType::JOB_EXECUTION, 1, ['status' => 'processed']));
 
         $response = $this->get('/aura');

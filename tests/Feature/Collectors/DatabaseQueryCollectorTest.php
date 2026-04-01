@@ -4,10 +4,8 @@ namespace Aura\Tests\Feature\Collectors;
 
 use Aura\Collectors\DatabaseQueryCollector;
 use Aura\Core\AuraManager;
-use Aura\Core\DataMasker;
-use Aura\Core\InsightEngine;
 use Aura\Core\Tracker;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\DB;

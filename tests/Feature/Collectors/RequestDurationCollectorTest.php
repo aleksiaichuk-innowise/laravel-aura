@@ -4,7 +4,7 @@ namespace Aura\Tests\Feature\Collectors;
 
 use Aura\Collectors\RequestDurationCollector;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
@@ -15,6 +15,7 @@ class RequestDurationCollectorTest extends TestCase
 {
     public function test_it_records_request_duration()
     {
+        config(['aura.slow_request_threshold' => 0]);
         $manager = app(AuraManager::class);
         $request = Request::create('/test', 'GET');
         $response = new Response();

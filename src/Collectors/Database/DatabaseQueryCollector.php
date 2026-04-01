@@ -6,8 +6,8 @@ namespace Aura\Collectors\Database;
 
 use Aura\Contracts\CollectorInterface;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Facades\Event;
 
@@ -42,6 +42,12 @@ class DatabaseQueryCollector implements CollectorInterface
      */
     protected function collect(QueryExecuted $event): void
     {
+        $table = config('aura.drivers.database.table', 'aura_metrics');
+        
+        if (str_contains($event->sql, "`{$table}`") || str_contains($event->sql, $table)) {
+            return;
+        }
+
         $this->manager->record(new MetricData(
             type: MetricType::DATABASE_QUERY,
             value: $event->time,

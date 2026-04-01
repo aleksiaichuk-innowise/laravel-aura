@@ -30,7 +30,7 @@ class StorageManager extends Manager implements StorageInterface
     }
 
     /**
-     * @param \Aura\DTO\MetricData $metric
+     * @param \Aura\DTO\Metrics\MetricData $metric
      */
     public function store($metric): void
     {
@@ -46,7 +46,7 @@ class StorageManager extends Manager implements StorageInterface
     }
 
     /**
-     * @param \Aura\DTO\MetricType $type
+     * @param \Aura\DTO\Metrics\MetricType $type
      * @param array $filters
      * @return \Illuminate\Support\Collection
      */

@@ -4,9 +4,8 @@ namespace Aura\Tests;
 
 use Aura\AuraServiceProvider;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
-use Illuminate\Support\Facades\DB;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Orchestra\Testbench\TestCase;
 
 class VerificationTest extends TestCase

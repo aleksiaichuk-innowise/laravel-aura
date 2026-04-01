@@ -3,7 +3,7 @@
 namespace Aura\Tests\Feature\Collectors;
 
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
@@ -24,7 +24,7 @@ class CacheCollectorTest extends TestCase
 
         $this->assertCount(1, $cacheMetrics);
         $this->assertEquals('hit', $cacheMetrics->first()->tags['operation']);
-        $this->assertEquals('********', $cacheMetrics->first()->tags['key']);
+        $this->assertEquals('test_1', $cacheMetrics->first()->tags['key']);
     }
 
     public function test_it_collects_cache_miss_events()

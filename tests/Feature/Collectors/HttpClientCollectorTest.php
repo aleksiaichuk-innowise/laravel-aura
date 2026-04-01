@@ -3,7 +3,7 @@
 namespace Aura\Tests\Feature\Collectors;
 
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricType;
 use Aura\Tests\TestCase;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Http\Client\Request;

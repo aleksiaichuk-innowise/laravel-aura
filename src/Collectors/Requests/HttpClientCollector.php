@@ -6,8 +6,8 @@ namespace Aura\Collectors\Requests;
 
 use Aura\Contracts\CollectorInterface;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Support\Facades\Event;
 
@@ -23,11 +23,19 @@ class HttpClientCollector implements CollectorInterface
         Event::listen(ResponseReceived::class, [$this, 'handleResponseReceived']);
     }
 
+    /**
+     * @param ResponseReceived $event
+     * @return void
+     */
     public function handleResponseReceived(ResponseReceived $event): void
     {
         $this->collect($event);
     }
 
+    /**
+     * @param ResponseReceived $event
+     * @return void
+     */
     protected function collect(ResponseReceived $event): void
     {
         $duration = $event->response->handlerStats()['total_time'] ?? 0;
@@ -40,7 +48,7 @@ class HttpClientCollector implements CollectorInterface
                 'method' => $event->request->method(),
                 'url' => $event->request->url(),
                 'status' => $event->response->status(),
-                'slow' => $durationMs > config('aura.slow_http_threshold', 1000),
+                'slow' => $durationMs > config('aura.slow_http_threshold'),
             ]
         ));
     }

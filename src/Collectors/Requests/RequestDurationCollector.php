@@ -6,8 +6,8 @@ namespace Aura\Collectors\Requests;
 
 use Aura\Contracts\CollectorInterface;
 use Aura\Core\AuraManager;
-use Aura\DTO\MetricData;
-use Aura\DTO\MetricType;
+use Aura\DTO\Metrics\MetricData;
+use Aura\DTO\Metrics\MetricType;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Support\Facades\Event;
 
@@ -41,6 +41,7 @@ class RequestDurationCollector implements CollectorInterface
                 'method' => $event->request->getMethod(),
                 'path' => $event->request->getPathInfo(),
                 'status' => $event->response->getStatusCode(),
+                'slow' => $duration >= config('aura.slow_request_threshold', 500),
             ]
         ));
     }

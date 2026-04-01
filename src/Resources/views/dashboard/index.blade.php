@@ -57,27 +57,55 @@
     </header>
 
     <main>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-12">
             <div class="glass p-6 card-stat">
                 <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Memory</span>
                 <div class="text-3xl font-bold mt-2 text-white glow-text">{{ number_format($memory->first()?->value ?? 0, 2) }}
                     <span class="text-lg text-slate-500">MB</span></div>
             </div>
             <div class="glass p-6 card-stat">
-                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Slow DB Queries</span>
+                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Slow DB</span>
                 <div class="text-3xl font-bold mt-2 text-white glow-text">{{ $slowQueries->count() }}</div>
             </div>
             <div class="glass p-6 card-stat">
-                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Slow HTTP</span>
+                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Slow App</span>
+                <div class="text-3xl font-bold mt-2 text-white glow-text">{{ $requests->count() }}</div>
+            </div>
+            <div class="glass p-6 card-stat">
+                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Slow API</span>
                 <div class="text-3xl font-bold mt-2 text-white glow-text">{{ $slowHttp->count() }}</div>
             </div>
             <div class="glass p-6 card-stat">
-                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Queue Jobs</span>
+                <span class="text-slate-500 text-xs font-bold uppercase tracking-widest">Queue</span>
                 <div class="text-3xl font-bold mt-2 text-white glow-text">{{ $jobs->count() }}</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- App Requests -->
+            <section class="glass p-1 overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/5">
+                    <h2 class="text-lg font-bold">Slow App Responses</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <tbody class="divide-y divide-white/5">
+                        @foreach($requests->take(5) as $req)
+                            @php $tags = is_string($req->tags) ? json_decode($req->tags, true, 512, JSON_THROW_ON_ERROR) : $req->tags; @endphp
+                            <tr class="hover:bg-white/5 transition-colors">
+                                <td class="px-6 py-4">
+                                    <span class="text-sky-400 font-bold">{{ number_format($req->value, 0) }}ms</span>
+                                </td>
+                                <td class="px-6 py-4 font-mono text-slate-300 truncate max-w-xs">
+                                    <span class="text-slate-500 mr-2">{{ $tags['method'] ?? '' }}</span>{{ $tags['path'] ?? '' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <!-- DB Queries -->
             <section class="glass p-1 overflow-hidden">
                 <div class="px-6 py-4 border-b border-white/5">
@@ -87,12 +115,12 @@
                     <table class="w-full text-left text-sm">
                         <tbody class="divide-y divide-white/5">
                         @foreach($slowQueries->take(5) as $query)
-                            @php $tags = is_string($query->tags) ? json_decode($query->tags, true) : $query->tags; @endphp
+                            @php $tags = is_string($query->tags) ? json_decode($query->tags, true, 512, JSON_THROW_ON_ERROR) : $query->tags; @endphp
                             <tr class="hover:bg-white/5 transition-colors">
                                 <td class="px-6 py-4">
                                     <span class="text-rose-400 font-bold">{{ $query->value }}ms</span>
                                 </td>
-                                <td class="px-6 py-4 font-mono text-slate-300 truncate max-w-xs">
+                                <td class="px-6 py-4 font-mono text-slate-300 truncate max-w-[180px]" title="{{ $tags['sql'] ?? 'Unknown' }}">
                                     {{ $tags['sql'] ?? 'Unknown' }}
                                 </td>
                             </tr>
@@ -116,8 +144,8 @@
                                 <td class="px-6 py-4">
                                     <span class="text-amber-400 font-bold">{{ number_format($http->value, 0) }}ms</span>
                                 </td>
-                                <td class="px-6 py-4 font-mono text-slate-300 truncate max-w-xs">
-                                    <span class="text-slate-500 mr-2">{{ $tags['method'] }}</span>{{ $tags['url'] }}
+                                <td class="px-6 py-4 font-mono text-slate-300 truncate max-w-[150px]" title="{{ $tags['url'] ?? '' }}">
+                                    <span class="text-slate-500 mr-2">{{ $tags['method'] ?? '' }}</span>{{ $tags['url'] ?? '' }}
                                 </td>
                             </tr>
                         @endforeach
@@ -133,8 +161,15 @@
                     <span class="text-sky-400">●</span> Performance Insights
                 </h2>
                 <div class="grid grid-cols-1 gap-4">
-                    @foreach($insights as $insight)
-                        @php $tags = is_string($insight->tags) ? json_decode($insight->tags, true) : $insight->tags; @endphp
+                    @php
+                        // Group insights to prevent UI spam from duplicates
+                        $uniqueInsights = $insights->unique(function($insight) {
+                            $tags = is_string($insight->tags) ? json_decode($insight->tags, true, 512) : $insight->tags;
+                            return ($tags['insight'] ?? '') . '-' . ($tags['sql'] ?? ($tags['url'] ?? ''));
+                        });
+                    @endphp
+                    @foreach($uniqueInsights as $insight)
+                        @php $tags = is_string($insight->tags) ? json_decode($insight->tags, true, 512, JSON_THROW_ON_ERROR) : $insight->tags; @endphp
                         <div class="glass p-6 border-l-4 {{ ($tags['severity'] ?? '') === 'warning' ? 'border-amber-500' : 'border-sky-500' }}">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -158,11 +193,11 @@
                 <div class="flex items-center gap-8">
                     <div>
                         <span class="text-slate-500 text-sm font-bold uppercase">Processed</span>
-                        <div class="text-3xl font-bold text-white">{{ $jobs->filter(fn($j) => (is_string($j->tags) ? json_decode($j->tags, true) : $j->tags)['status'] === 'processed')->count() }}</div>
+                        <div class="text-3xl font-bold text-white">{{ $jobs->filter(fn($j) => (is_string($j->tags) ? json_decode($j->tags, true, 512, JSON_THROW_ON_ERROR) : $j->tags)['status'] === 'processed')->count() }}</div>
                     </div>
                     <div>
                         <span class="text-slate-500 text-sm font-bold uppercase">Failed</span>
-                        <div class="text-3xl font-bold text-rose-500">{{ $jobs->filter(fn($j) => (is_string($j->tags) ? json_decode($j->tags, true) : $j->tags)['status'] === 'failed')->count() }}</div>
+                        <div class="text-3xl font-bold text-rose-500">{{ $jobs->filter(fn($j) => (is_string($j->tags) ? json_decode($j->tags, true, 512, JSON_THROW_ON_ERROR) : $j->tags)['status'] === 'failed')->count() }}</div>
                     </div>
                 </div>
             </section>
@@ -171,8 +206,8 @@
             <section class="glass p-8">
                 <h2 class="text-xl font-bold mb-4">Cache Efficiency</h2>
                 @php
-                    $hits = $cache->filter(fn($c) => (is_string($c->tags) ? json_decode($c->tags, true) : $c->tags)['operation'] === 'hit')->count();
-                    $misses = $cache->filter(fn($c) => (is_string($c->tags) ? json_decode($c->tags, true) : $c->tags)['operation'] === 'miss')->count();
+                    $hits = $cache->filter(fn($c) => (is_string($c->tags) ? json_decode($c->tags, true, 512, JSON_THROW_ON_ERROR) : $c->tags)['operation'] === 'hit')->count();
+                    $misses = $cache->filter(fn($c) => (is_string($c->tags) ? json_decode($c->tags, true, 512, JSON_THROW_ON_ERROR) : $c->tags)['operation'] === 'miss')->count();
                     $total = $hits + $misses;
                     $rate = $total > 0 ? ($hits / $total) * 100 : 0;
                 @endphp

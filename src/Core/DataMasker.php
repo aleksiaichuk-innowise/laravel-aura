@@ -6,14 +6,26 @@ namespace Aura\Core;
 
 class DataMasker
 {
-    protected array $maskFields = ['password', 'token', 'secret', 'authorization', 'key', 'credential'];
+    /** @var string[] */
+    protected array $maskFields;
+
+    public function __construct()
+    {
+        $this->maskFields = config('aura.masking.fields', [
+            'password', 'token', 'secret', 'authorization', 'key', 'credential', 'api_key', 'pass'
+        ]);
+    }
 
     /**
-     * @param array $data
-     * @return array
+     * @param array<string, mixed>|mixed $data
+     * @return array<string, mixed>|mixed
      */
-    public function mask(array $data): array
+    public function mask(mixed $data): mixed
     {
+        if (!is_array($data)) {
+            return $data;
+        }
+
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $data[$key] = $this->mask($value);
@@ -34,8 +46,8 @@ class DataMasker
      */
     public function maskSql(string $sql): string
     {
-        // Simple regex to mask values in common SQL patterns if needed.
-        // For this showcase, we mostly mask bindings, but we can add more logic here.
+        // For now, we rely on masking bindings, but we could add 
+        // logic here to mask literal values in queries if they bypass bindings.
         return $sql;
     }
 
