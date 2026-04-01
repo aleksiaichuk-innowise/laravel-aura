@@ -1,0 +1,10 @@
+/vendor/
+/composer.lock
+.env
+.phpunit.result.cache
+/workbench/
+/.idea/
+/.vscode/
+.DS_Store
+/docker/
+/docker-compose.yml
