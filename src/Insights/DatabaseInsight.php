@@ -14,6 +14,9 @@ class DatabaseInsight implements InsightInterface
     protected int $duplicateThreshold = 2;
     protected int $nPlusOneThreshold = 5;
 
+    /**
+     * @throws \JsonException
+     */
     public function process(Collection $metrics): Collection
     {
         $queries = $metrics->filter(fn(MetricData $m) => $m->type === MetricType::DATABASE_QUERY);
@@ -26,17 +29,20 @@ class DatabaseInsight implements InsightInterface
         $queryHashes = [];
         $fullHashes = [];
 
+        $detectedNPlusOne = [];
+        $detectedDuplicates = [];
+
         foreach ($queries as $metric) {
             $sql = $metric->tags['sql'] ?? '';
             $bindings = $metric->tags['bindings'] ?? [];
             
             $sqlHash = md5($sql);
-            $fullHash = md5($sql . json_encode($bindings));
+            $fullHash = md5(sprintf("%s%s", $sql, json_encode($bindings, JSON_THROW_ON_ERROR)));
 
             $queryHashes[$sqlHash] = ($queryHashes[$sqlHash] ?? 0) + 1;
             $fullHashes[$fullHash] = ($fullHashes[$fullHash] ?? 0) + 1;
 
-            if ($queryHashes[$sqlHash] === $this->nPlusOneThreshold) {
+            if ($queryHashes[$sqlHash] >= $this->nPlusOneThreshold && !isset($detectedNPlusOne[$sqlHash])) {
                 $insights->push(new MetricData(
                     type: MetricType::DATABASE_QUERY,
                     value: $queryHashes[$sqlHash],
@@ -46,9 +52,10 @@ class DatabaseInsight implements InsightInterface
                         'severity' => 'warning'
                     ]
                 ));
+                $detectedNPlusOne[$sqlHash] = true;
             }
 
-            if ($fullHashes[$fullHash] === $this->duplicateThreshold) {
+            if ($fullHashes[$fullHash] >= $this->duplicateThreshold && !isset($detectedDuplicates[$fullHash])) {
                 $insights->push(new MetricData(
                     type: MetricType::DATABASE_QUERY,
                     value: $fullHashes[$fullHash],
@@ -59,6 +66,7 @@ class DatabaseInsight implements InsightInterface
                         'severity' => 'info'
                     ]
                 ));
+                $detectedDuplicates[$fullHash] = true;
             }
         }
 

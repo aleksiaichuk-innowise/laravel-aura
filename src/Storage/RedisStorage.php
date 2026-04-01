@@ -33,6 +33,13 @@ class RedisStorage implements StorageInterface
         return collect($data)
             ->map(fn($item) => json_decode($item, true))
             ->where('type', $type->value)
+            ->map(fn($item) => new MetricData(
+                type: MetricType::from($item['type']),
+                value: (float) $item['value'],
+                tags: $item['tags'] ?? [],
+                traceId: $item['trace_id'] ?? null,
+                timestamp: (float) $item['timestamp']
+            ))
             ->values();
     }
 

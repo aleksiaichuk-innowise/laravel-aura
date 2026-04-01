@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Aura;
 
+use Aura\Console\Commands\InstallCommand;
+use Aura\Console\Commands\PruneCommand;
 use Aura\Contracts\StorageInterface;
 use Aura\Core\AuraManager;
 use Aura\Core\DataMasker;
 use Aura\Core\InsightEngine;
 use Aura\Core\Tracker;
+use Aura\Http\Middleware\AuraShieldMiddleware;
 use Aura\Insights\DatabaseInsight;
 use Aura\Storage\StorageManager;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -24,7 +27,9 @@ class AuraServiceProvider extends ServiceProvider
         $this->app->singleton(DataMasker::class);
 
         $this->app->singleton(StorageManager::class);
-        $this->app->alias(StorageManager::class, StorageInterface::class);
+        $this->app->singleton(StorageInterface::class, function ($app) {
+            return $app->make(StorageManager::class);
+        });
 
         $this->app->singleton(InsightEngine::class, function ($app) {
             return new InsightEngine([
@@ -35,18 +40,23 @@ class AuraServiceProvider extends ServiceProvider
         $this->app->singleton(AuraManager::class);
     }
 
+    /**
+     * @throws BindingResolutionException
+     */
     public function boot(): void
     {
         if (!config('aura.enabled')) {
             return;
         }
 
+        $this->app['router']->aliasMiddleware('aura.auth', AuraShieldMiddleware::class);
+
         $this->registerResources();
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                \Aura\Console\Commands\InstallCommand::class,
-                \Aura\Console\Commands\PruneCommand::class,
+                InstallCommand::class,
+                PruneCommand::class,
             ]);
         }
 

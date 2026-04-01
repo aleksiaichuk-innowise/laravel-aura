@@ -20,9 +20,12 @@ class HttpClientCollector implements CollectorInterface
 
     public function register(): void
     {
-        Event::listen(ResponseReceived::class, function (ResponseReceived $event) {
-            $this->collect($event);
-        });
+        Event::listen(ResponseReceived::class, [$this, 'handleResponseReceived']);
+    }
+
+    public function handleResponseReceived(ResponseReceived $event): void
+    {
+        $this->collect($event);
     }
 
     protected function collect(ResponseReceived $event): void

@@ -12,6 +12,9 @@ class InstallCommand extends Command
 
     protected $description = 'Install the Aura Monitoring package';
 
+    /**
+     * @return void
+     */
     public function handle(): void
     {
         $this->info('Installing Aura...');
@@ -23,6 +26,9 @@ class InstallCommand extends Command
         $this->info('You can access the dashboard at: ' . config('aura.path', 'aura'));
     }
 
+    /**
+     * @return void
+     */
     protected function publishConfiguration(): void
     {
         $this->call('vendor:publish', [
@@ -30,6 +36,9 @@ class InstallCommand extends Command
         ]);
     }
 
+    /**
+     * @return void
+     */
     protected function runMigrations(): void
     {
         if ($this->confirm('Do you want to run the migrations now?')) {

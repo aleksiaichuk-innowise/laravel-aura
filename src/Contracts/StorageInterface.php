@@ -12,8 +12,15 @@ interface StorageInterface
 {
     public function store(MetricData $metric): void;
 
+    /**
+     * @param array<int, MetricData> $metrics
+     */
     public function storeBatch(array $metrics): void;
 
+    /**
+     * @param array<string, mixed> $filters
+     * @return Collection<int, MetricData>
+     */
     public function retrieve(MetricType $type, array $filters = []): Collection;
 
     public function prune(\DateTimeInterface $before): void;

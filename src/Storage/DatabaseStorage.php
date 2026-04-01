@@ -38,7 +38,14 @@ class DatabaseStorage implements StorageInterface
             ->where('type', $type->value)
             ->orderByDesc('created_at')
             ->limit(100)
-            ->get();
+            ->get()
+            ->map(fn($item) => new MetricData(
+                type: MetricType::from($item->type),
+                value: (float) $item->value,
+                tags: json_decode($item->tags, true) ?? [],
+                traceId: $item->trace_id ?? null,
+                timestamp: (float) strtotime($item->created_at)
+            ));
     }
 
     public function prune(\DateTimeInterface $before): void
@@ -52,6 +59,7 @@ class DatabaseStorage implements StorageInterface
     {
         return [
             'id' => (string) Str::uuid(),
+            'trace_id' => $metric->traceId,
             'type' => $metric->type->value,
             'value' => $metric->value,
             'tags' => json_encode($metric->tags),

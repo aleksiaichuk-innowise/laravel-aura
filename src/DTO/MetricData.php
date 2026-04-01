@@ -6,8 +6,14 @@ namespace Aura\DTO;
 
 use Illuminate\Contracts\Support\Arrayable;
 
+/**
+ * @implements Arrayable<string, mixed>
+ */
 readonly class MetricData implements Arrayable
 {
+    /**
+     * @param array<string, mixed> $tags
+     */
     public function __construct(
         public MetricType $type,
         public float|int $value,

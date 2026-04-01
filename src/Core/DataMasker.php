@@ -8,6 +8,10 @@ class DataMasker
 {
     protected array $maskFields = ['password', 'token', 'secret', 'authorization', 'key', 'credential'];
 
+    /**
+     * @param array $data
+     * @return array
+     */
     public function mask(array $data): array
     {
         foreach ($data as $key => $value) {
@@ -24,6 +28,10 @@ class DataMasker
         return $data;
     }
 
+    /**
+     * @param string $sql
+     * @return string
+     */
     public function maskSql(string $sql): string
     {
         // Simple regex to mask values in common SQL patterns if needed.
@@ -31,6 +39,10 @@ class DataMasker
         return $sql;
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     protected function shouldMask(string $key): bool
     {
         $key = strtolower($key);

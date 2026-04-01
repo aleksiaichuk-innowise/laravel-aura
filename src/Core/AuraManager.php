@@ -21,6 +21,10 @@ class AuraManager
     ) {
     }
 
+    /**
+     * @param MetricData $metric
+     * @return void
+     */
     public function record(MetricData $metric): void
     {
         // Mask sensitive data in tags
@@ -40,6 +44,9 @@ class AuraManager
         $this->metrics[] = $metric;
     }
 
+    /**
+     * @return void
+     */
     public function flush(): void
     {
         if (empty($this->metrics)) {
@@ -70,8 +77,19 @@ class AuraManager
         $this->metrics = [];
     }
 
+    /**
+     * @return StorageInterface
+     */
     public function getStorage(): StorageInterface
     {
         return $this->storage;
+    }
+
+    /**
+     * @return MetricData[]
+     */
+    public function getMetrics(): array
+    {
+        return $this->metrics;
     }
 }

@@ -19,12 +19,30 @@ class JobCollector implements CollectorInterface
     ) {
     }
 
+    /**
+     * @return void
+     */
     public function register(): void
     {
-        Event::listen(JobProcessed::class, fn($event) => $this->collect($event, 'processed'));
-        Event::listen(JobFailed::class, fn($event) => $this->collect($event, 'failed'));
+        Event::listen(JobProcessed::class, [$this, 'handleJobProcessed']);
+        Event::listen(JobFailed::class, [$this, 'handleJobFailed']);
     }
 
+    public function handleJobProcessed($event): void
+    {
+        $this->collect($event, 'processed');
+    }
+
+    public function handleJobFailed($event): void
+    {
+        $this->collect($event, 'failed');
+    }
+
+    /**
+     * @param $event
+     * @param string $status
+     * @return void
+     */
     protected function collect($event, string $status): void
     {
         // Many queue drivers don't provide duration directly in the event, 

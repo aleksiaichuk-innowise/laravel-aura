@@ -6,8 +6,9 @@ namespace Aura\Http\Controllers;
 
 use Aura\Contracts\StorageInterface;
 use Aura\DTO\MetricType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\Response;
 
 class DashboardController extends Controller
 {
@@ -18,24 +19,22 @@ class DashboardController extends Controller
 
     public function index()
     {
+
         $allDbMetrics = $this->storage->retrieve(MetricType::DATABASE_QUERY);
-        
+
         // Filter insights (metrics that have an 'insight' tag)
         $insights = $allDbMetrics->filter(function ($m) {
-            $tags = is_string($m->tags) ? json_decode($m->tags, true) : $m->tags;
-            return isset($tags['insight']);
+            return isset($m->tags['insight']);
         });
 
         // Raw queries
         $slowQueries = $allDbMetrics->filter(function ($m) {
-            $tags = is_string($m->tags) ? json_decode($m->tags, true) : $m->tags;
-            return !isset($tags['insight']) && ($tags['slow'] ?? false);
+            return !isset($m->tags['insight']) && ($m->tags['slow'] ?? false);
         });
 
         $httpRequests = $this->storage->retrieve(MetricType::EXTERNAL_HTTP_REQUEST);
         $slowHttpRequests = $httpRequests->filter(function ($m) {
-            $tags = is_string($m->tags) ? json_decode($m->tags, true) : $m->tags;
-            return $tags['slow'] ?? false;
+            return $m->tags['slow'] ?? false;
         });
 
         return view('aura::dashboard.index', [
@@ -44,17 +43,17 @@ class DashboardController extends Controller
             'requests' => $this->storage->retrieve(MetricType::REQUEST_DURATION),
             'memory' => $this->storage->retrieve(MetricType::MEMORY_USAGE),
             'slowHttp' => $slowHttpRequests,
-            'jobs' => $this->storage->retrieve(MetricType::JOB_EXECUTION),
             'cache' => $this->storage->retrieve(MetricType::CACHE_OPERATION),
+            'jobs' => $this->storage->retrieve(MetricType::JOB_EXECUTION),
         ]);
     }
 
-    public function metrics(string $type)
+    public function metrics(string $type): JsonResponse
     {
         $metricType = MetricType::tryFrom($type);
         
         if (!$metricType) {
-            return response()->json(['error' => 'Invalid metric type'], 400);
+            return response()->json(['error' => 'Invalid metric type'], Response::HTTP_BAD_REQUEST);
         }
         
         return response()->json([

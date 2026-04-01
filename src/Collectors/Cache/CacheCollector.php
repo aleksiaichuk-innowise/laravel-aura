@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Event;
 
 class CacheCollector implements CollectorInterface
 {
+    /**
+     * @param AuraManager $manager
+     */
     public function __construct(
         protected AuraManager $manager
     ) {
@@ -22,11 +25,31 @@ class CacheCollector implements CollectorInterface
 
     public function register(): void
     {
-        Event::listen(CacheHit::class, fn($event) => $this->collect($event, 'hit'));
-        Event::listen(CacheMissed::class, fn($event) => $this->collect($event, 'miss'));
-        Event::listen(KeyWritten::class, fn($event) => $this->collect($event, 'write'));
+        Event::listen(CacheHit::class, [$this, 'handleCacheHit']);
+        Event::listen(CacheMissed::class, [$this, 'handleCacheMiss']);
+        Event::listen(KeyWritten::class, [$this, 'handleKeyWritten']);
     }
 
+    public function handleCacheHit($event): void
+    {
+        $this->collect($event, 'hit');
+    }
+
+    public function handleCacheMiss($event): void
+    {
+        $this->collect($event, 'miss');
+    }
+
+    public function handleKeyWritten($event): void
+    {
+        $this->collect($event, 'write');
+    }
+
+    /**
+     * @param $event
+     * @param string $operation
+     * @return void
+     */
     protected function collect($event, string $operation): void
     {
         $this->manager->record(new MetricData(

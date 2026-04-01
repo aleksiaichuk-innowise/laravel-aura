@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Aura\Contracts;
 
+use Aura\DTO\MetricData;
 use Illuminate\Support\Collection;
 
 interface InsightInterface
@@ -11,8 +12,8 @@ interface InsightInterface
     /**
      * Analyze a collection of metrics and return new insights or modified metrics.
      *
-     * @param Collection<\Aura\DTO\MetricData> $metrics
-     * @return Collection<\Aura\DTO\MetricData>
+     * @param Collection<int, MetricData> $metrics
+     * @return Collection<int, MetricData>
      */
     public function process(Collection $metrics): Collection;
 }

@@ -25,6 +25,10 @@ class RequestDurationCollector implements CollectorInterface
         });
     }
 
+    /**
+     * @param RequestHandled $event
+     * @return void
+     */
     protected function collect(RequestHandled $event): void
     {
         $startTime = defined('LARAVEL_START') ? LARAVEL_START : microtime(true);

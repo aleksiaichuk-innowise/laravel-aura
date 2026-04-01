@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create(config('aura.database.table', 'aura_metrics'), function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('trace_id')->nullable()->index();
             $table->string('type')->index();
             $table->float('value');
             $table->json('tags')->nullable();

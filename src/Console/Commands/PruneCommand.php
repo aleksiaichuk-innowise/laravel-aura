@@ -13,6 +13,10 @@ class PruneCommand extends Command
 
     protected $description = 'Prune old Aura metrics from storage';
 
+    /**
+     * @param StorageInterface $storage
+     * @return void
+     */
     public function handle(StorageInterface $storage): void
     {
         $hours = (int) $this->option('hours');

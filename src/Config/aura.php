@@ -54,5 +54,6 @@ return [
 
     'middleware' => [
         'web',
+        'aura.auth',
     ],
 ];

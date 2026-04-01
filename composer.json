@@ -16,7 +16,11 @@
     "require-dev": {
         "orchestra/testbench": "^8.0|^9.0",
         "phpunit/phpunit": "^10.0",
-        "orchestra/workbench": "^1.0"
+        "orchestra/workbench": "^1.0",
+        "phpstan/phpstan": "^1.12",
+        "phpstan/phpstan-deprecation-rules": "^1.2",
+        "phpstan/phpstan-phpunit": "^1.4",
+        "larastan/larastan": "^2.11"
     },
     "autoload": {
         "psr-4": {

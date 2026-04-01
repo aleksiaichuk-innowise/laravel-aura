@@ -19,6 +19,10 @@ class InsightEngine
         }
     }
 
+    /**
+     * @param InsightInterface $insight
+     * @return void
+     */
     public function addInsight(InsightInterface $insight): void
     {
         $this->insights[] = $insight;

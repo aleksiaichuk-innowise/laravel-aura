@@ -16,6 +16,16 @@ class VerificationTest extends TestCase
         return [AuraServiceProvider::class];
     }
 
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('database.connections.testing', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ]);
+    }
+
     protected function defineDatabaseMigrations()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../src/Database/Migrations');
@@ -28,7 +38,10 @@ class VerificationTest extends TestCase
         $manager->record(new MetricData(
             type: MetricType::DATABASE_QUERY,
             value: 100,
-            tags: ['sql' => 'select * from users'],
+            tags: [
+                'sql' => 'select * from users',
+                'slow' => true,
+            ],
         ));
 
         $manager->flush();
